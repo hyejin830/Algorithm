@@ -1,0 +1,103 @@
+#include <iostream>
+#include <cstring>
+#include <math.h>
+using namespace std;
+
+
+int map[101][101]; //입력 배열
+int check[101]; // 경사로 체크 배열
+int N, L,res=0;
+
+bool isCheck(int i,int start, int end) {
+	for (int j = start; j <= end; j++) {
+		if (check[j] > 0) return false;
+	}
+	return true;
+}
+
+
+int main() {
+
+	// N : 지도 크기 L : 경사로 길이
+	cin >> N >> L;
+
+	//값 입력
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> map[i][j];
+		}
+	}
+
+	int rc = 0;
+	int pre, std;
+
+	while (rc < 2) {
+
+		for (int i = 0; i < N; i++) {
+			int cnt = 1;
+			bool flag = false;
+			memset(check, 0, sizeof(check));
+
+			for (int j = 1; j < N; j++) {
+
+				// rc가 0일 경우 행 기준, 1일 경우 열 기준 순회
+				if (rc == 0) pre = map[i][j - 1], std = map[i][j];
+				else pre = map[j - 1][i], std = map[j][i];
+
+				if (pre == std) { // 이전 숫자와 동일할 경우
+					cnt++;
+					if (flag == true && cnt >= L) { //경사로 ok
+						if (isCheck(i, j - L + 1, j)) { // 경사로 겹침 체크 
+							for (int down = (j - L + 1); down <= j; down++) check[down] = 1; 
+							cnt = 1; flag = false;
+						}
+						else break;
+					}
+				}
+				else {
+					if (flag == true && cnt < L) break; //값 차이가 생기면서 조건에 맞지 않는 경우
+					if (abs(pre - std) >= 2) break; // 2차이 나는 경우
+					// 숫자 1 차이 날 경우 
+					else {
+						//감소
+						if (pre - std == 1) {
+							flag = true, cnt = 1;
+
+							if (flag == true && cnt >= L) {
+								//경사로 ok , L이 1일 경우
+								if (check[j] == 0) {
+									check[j] = 1;
+									cnt = 1; flag = false;
+								}
+								else break;
+							}
+						}
+						//
+						else {
+							if (!isCheck(i, j - L, j - 1)) break;
+							else {
+								if (flag == true) break;
+								if (cnt >= L) { // 경사로 ok
+									for (int up = (j - L); up <= j - 1; up++) check[up] = 2;
+									cnt = 1;
+								}
+								else break;
+							}
+						}
+					}
+
+				}
+				// 마지막 인덱스 처리 시
+				if (j == N - 1) {
+					if (flag == true && cnt < L) break;
+					res++;
+				}
+			}
+		}
+		rc++;
+	}
+		
+	cout << res << endl;
+
+	return 0;
+}
