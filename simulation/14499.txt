@@ -1,0 +1,97 @@
+#include <iostream>
+using namespace std;
+
+// 14499 주사위 굴리기
+
+int N, M, x, y, K;
+int map[21][21];// 지도
+int dice[7]; //주사위 정보 저장
+int order[1001]; // 명령
+
+void movedice(int dir) {
+	int tmp;
+	if (dir == 1) { // 동쪽
+		tmp = dice[6];
+		dice[6] = dice[2];
+		dice[2] = dice[5];
+		dice[5] = dice[4];
+		dice[4] = tmp;
+	}
+	else if (dir == 2) { //서
+		tmp = dice[5];
+		dice[5] = dice[2];
+		dice[2] = dice[6];
+		dice[6] = dice[4];
+		dice[4] = tmp;
+	}
+	else if (dir == 3) { //북
+		tmp = dice[4];
+		dice[4] = dice[1];
+		dice[1] = dice[2];
+		dice[2] = dice[3];
+		dice[3] = tmp;
+	}
+	else if (dir == 4) { //남
+		tmp = dice[2];
+		dice[2] = dice[1];
+		dice[1] = dice[4];
+		dice[4] = dice[3];
+		dice[3] = tmp;
+
+	}
+}
+ 
+int main() {
+	
+	//입력
+	cin >> N >> M >> x >> y >> K;
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> map[i][j];
+		}
+	}
+
+	for (int k = 0; k < K; k++) {
+		cin >> order[k];
+
+		int movex = x;
+		int movey = y;
+
+		if (order[k] == 1) { // 동쪽이동
+			movey = y + 1;
+			if (movey < 0 || movey >= M) continue; // 범위에 벗어날 경우 무시
+		}
+		else if (order[k] == 2) {// 서쪽이동
+			movey = y - 1;
+			if (movey < 0 || movey >= M) continue; // 범위에 벗어날 경우 무시
+		}
+		else if (order[k] == 3) { // 북쪽이동
+			movex = x - 1;
+			if (movex < 0 || movex >= N) continue; // 범위에 벗어날 경우 무시
+		}
+		else if (order[k] == 4) { // 남쪽이동
+			movex = x + 1;
+			if (movex < 0 || movex >= N) continue; // 범위에 벗어날 경우 무시
+		}
+
+		// 주사위 배열 수정
+		movedice(order[k]);
+		if (map[movex][movey] == 0) {
+			// 주사위의 바닥면에 있는 수가 칸에 복사
+			map[movex][movey] = dice[4];
+		}
+		else {
+			// 칸에 쓰여 있는 수가 주사위의 바닥면으로 복사
+			dice[4] = map[movex][movey];
+			map[movex][movey] = 0;
+		}
+
+		x = movex;
+		y = movey;
+
+		cout << dice[2] << endl;
+	}
+	
+	return 0;
+}
