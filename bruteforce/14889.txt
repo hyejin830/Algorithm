@@ -1,0 +1,72 @@
+#include <iostream>
+#include <math.h>
+using namespace std;
+
+// 14889 : 스타트와 링크
+int N, res = 100;
+int all_sum = 0;
+int map[21][21];
+int visited[21];
+int arr[11],arr1[11];
+
+void solve(int idx, int cnt) {
+	if (cnt == (N / 2)) {
+		int j = 0;
+		for (int i = 1; i <= N; i++) {
+			if (visited[i] != 1) {
+				arr1[j] = i;
+				j++;
+			}
+		}
+		int sum1=0 ,sum2= 0;
+		for (int i = 0; i < (N /2) - 1; i++) {
+			for (int j = i + 1; j < (N /2); j++) {
+				sum1 = sum1 + map[arr[i]][arr[j]];
+				sum2 = sum2 + map[arr1[i]][arr1[j]];
+			}
+		}
+
+		if (abs(sum1 - sum2) < res) res = abs(sum1 - sum2);
+		
+		return;
+	}
+
+	for (int i = idx; i <= N; i++) {
+
+		if (visited[i] == 0) {
+			arr[cnt] = i;
+			if (arr[0] != 1) break;
+			visited[i] = 1;
+			solve(i,cnt + 1);
+			visited[i] = 0;
+		}
+		
+	}
+
+}
+int main() {
+
+	cin >> N;
+
+	// 값 입력
+	for (int i = 1; i <= N; i++) {
+		int flag = 0;
+		for (int j = 1; j <= N; j++) {
+			cin >> map[i][j];
+			all_sum += map[i][j];
+
+			if (map[i][j] == 0) flag = 1;
+			if (flag == 0) {
+				map[j][i] = map[i][j] + map[j][i];
+				map[i][j] = 0;
+			}
+
+		}
+	}
+
+	solve(1,0);
+
+	cout << res << endl;
+
+	return 0;
+}
